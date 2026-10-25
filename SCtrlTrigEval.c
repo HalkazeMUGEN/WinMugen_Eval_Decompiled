@@ -323,12 +323,15 @@ void R_SCtrlTrigEval(MUGEN_PLAYER* player, MUGEN_EVAL_TRIGGER* trig) {
           }
         }
       }
-    } else if (p2 != enemy1) {
-      furthestEnemy = enemy1;
-      if (p2 != enemy2) {
-        if (__builtin_abs(PlayerDistX(redirect_player, enemy2)) > __builtin_abs(PlayerDistX(redirect_player, enemy1))) {
-          p4 = enemy2;
-          furthestEnemy = p4;
+    } else {
+      furthestEnemy = enemy2;
+      if (p2 != enemy1) {
+        furthestEnemy = enemy1;
+        if (p2 != enemy2) {
+          if (__builtin_abs(PlayerDistX(redirect_player, enemy2)) > __builtin_abs(PlayerDistX(redirect_player, enemy1))) {
+            p4 = enemy2;
+            furthestEnemy = p4;
+          }
         }
       }
     }
@@ -473,7 +476,7 @@ void R_SCtrlTrigEval(MUGEN_PLAYER* player, MUGEN_EVAL_TRIGGER* trig) {
       break;
     case ID_TRIG_FrondEdgeDist:       // FrontEdgeDist / FrontEdgeBodyDist, $2で判別
     case ID_TRIG_BackEdgeBodyDist: {  // BackEdgeDist / BackEdgeBodyDist, 同上
-      redirect_player->leftBounds = (int32_t)(((g->bound).screenRight - 160) / redirect_player->scale + g->iStageAxisX + 160.0F);
+      redirect_player->leftBounds = (int32_t)((float)((g->bound).screenRight - 160) / redirect_player->scale + (float)(g->iStageAxisX) + 160.0F);
       redirect_player->rightBounds = (int32_t)((160 - (g->bound).screenLeft) / redirect_player->scale + g->iStageAxisX + 160.0F);
       int32_t temp = 0;
       if ((trig->trigArgs)[2].i != 0) {
@@ -485,16 +488,16 @@ void R_SCtrlTrigEval(MUGEN_PLAYER* player, MUGEN_EVAL_TRIGGER* trig) {
       }
       if (trig->trigID == ID_TRIG_FrondEdgeDist) {
         if ((trig->trigArgs)[2].i != 0) {
-          temp += redirect_player->widthEdgeX;
+          temp += redirect_player->widthEdgeFront;
         }
-        int32_t temp2 = redirect_player->facing == 1 ? redirect_player->rightBounds : redirect_player->leftBounds;
-        result.i = (int32_t)(((redirect_player->facing * temp) + redirect_player->screenPosX) + temp2 * redirect_player->facing);
+        int32_t temp2 = ((redirect_player->facing == 1) ? (redirect_player->rightBounds) : (redirect_player->leftBounds));
+        result.i = (int32_t)((((redirect_player->facing * temp) + redirect_player->screenPosX) - temp2) * -(redirect_player->facing));
       } else {
         if ((trig->trigArgs)[2].i != 0) {
-          temp += redirect_player->widthEdgeY;
+          temp += redirect_player->widthEdgeBack;
         }
-        int32_t temp2 = redirect_player->facing == 1 ? redirect_player->leftBounds : redirect_player->rightBounds;
-        result.i = (int32_t)(((redirect_player->screenPosX - (redirect_player->facing * temp))) - temp2 * redirect_player->facing);
+        int32_t temp2 = ((redirect_player->facing == 1) ? (redirect_player->leftBounds) : (redirect_player->rightBounds));
+        result.i = (int32_t)((((redirect_player->screenPosX - (redirect_player->facing * temp))) - temp2) * redirect_player->facing);
       }
     } break;
     case ID_TRIG_Life:  // Life
@@ -608,7 +611,7 @@ void R_SCtrlTrigEval(MUGEN_PLAYER* player, MUGEN_EVAL_TRIGGER* trig) {
       break;
     case ID_TRIG_Random:  // Random
                           /* 独自の乱数生成関数に置換 */
-      result.i = rand() % 1000;
+      result.i = (uint32_t)rand() % 1000;
       break;
     case ID_TRIG_NumProj:  // NumProj
       result.i = ProjArrayCountActive(redirect_player->projectiles);
@@ -1245,11 +1248,12 @@ void R_SCtrlTrigEval(MUGEN_PLAYER* player, MUGEN_EVAL_TRIGGER* trig) {
       }
     } break;
     case ID_TRIG_IsHelper_ID: {  // IsHelper(a)
+      int32_t a;
+      uint32_t ret = SPopI(redirect_player, &a);
       if (redirect_player->isHelper != 1) {
         result.i = 0;
       } else {
-        int32_t a;
-        if (SPopI(redirect_player, (int32_t*)&a) == 3) {
+        if (ret == 3) {
           PushMyStackI(a);
           PushMyStackT(EVAL_TYPE_ERROR);
           return;

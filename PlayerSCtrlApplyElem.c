@@ -177,9 +177,9 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
           Warn(player, "negative random param for GameMakeAnim");
         }
       } else {
-        int32_t temp = rand();
+        uint32_t temp = (uint32_t)rand();
         posX += ((temp % random) - (random >> 1)) * player->facing;
-        temp = rand();
+        temp = (uint32_t)rand();
         posY += ((temp % random) - (random >> 1));
       }
       int32_t id = AnimPerArrayAdd(g->persistentAnimArray, g->fightfx_anim, g->fightfx_sff, 0, value, posX, posY, (player->facing != 1), -1);
@@ -298,9 +298,9 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
       if ((g->currentStateElapsedTime) % spacing == 0) {
         PlayerCalcDraw(player);
         int32_t temp = EvalExpressionI(player, &(scData->params[0]), 1);
-        int32_t posX = (int32_t)((float)(rand() % 3) + (float)(temp * player->facing) + g->iStageAxisX + player->realScreenPosX - 1.0F);
+        int32_t posX = (int32_t)((float)((uint32_t)(rand()) % 3) + (float)(temp * player->facing) + g->iStageAxisX + player->realScreenPosX - 1.0F);
         temp = EvalExpressionI(player, &(scData->params[1]), 1);
-        int32_t posY = (int32_t)((float)(rand() % 3) + (float)(temp) + g->iStageAxisY + player->realScreenPosY - 1.0F);
+        int32_t posY = (int32_t)((float)((uint32_t)(rand()) % 3) + (float)(temp) + g->iStageAxisY + player->realScreenPosY - 1.0F);
         int32_t idx = ExplodAdd(g->explods, 120, g->fightfx_anim, g->fightfx_sff);
         if (idx != -1) {
           MUGEN_EXPLODS_DATA* data = &((g->explods->data)[idx]);
@@ -314,9 +314,9 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
         float ftemp = EvalExpressionF(player, &(scData->params[5]));
         if (ftemp != 0.0F) {
           ftemp = EvalExpressionF(player, &(scData->params[3]));
-          int32_t pos2X = (int32_t)((float)(rand() % 3) + (float)(ftemp * player->facing) + g->iStageAxisX + player->realScreenPosX - 1.0F);
+          int32_t pos2X = (int32_t)((float)((uint32_t)(rand()) % 3) + (float)(ftemp * player->facing) + g->iStageAxisX + player->realScreenPosX - 1.0F);
           ftemp = EvalExpressionF(player, &(scData->params[4]));
-          int32_t pos2Y = (int32_t)((float)(rand() % 3) + (float)(ftemp) + g->iStageAxisY + player->realScreenPosY - 1.0F);
+          int32_t pos2Y = (int32_t)((float)((uint32_t)(rand()) % 3) + (float)(ftemp) + g->iStageAxisY + player->realScreenPosY - 1.0F);
           idx = ExplodAdd(g->explods, 120, g->fightfx_anim, g->fightfx_sff);
           if (idx != -1) {
             MUGEN_EXPLODS_DATA* data = &((g->explods->data)[idx]);
@@ -459,7 +459,7 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
       // $2 = paramsの3つ目
       // $3 = paramsの4つ目
       // $4 = paramsの5つ目
-      // $5 = paramsの個数？
+      // $5 = paramsの個数
       // Clipboardの処理は実際にはインライン化されているが, あまりに複雑なため関数に分離させた
       SCtrlClipboard(player, scData->scID, (scData->params)[5].value.i, (char*)((scData->paramsEx).clipboard), scData->params);
       return 0;
@@ -495,6 +495,7 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
         facing = (facing >= 0 ? 1 : -1);
         Warn(player, "bind's facing param not +/-1 or 0");
       }
+      (player->bindTo).facing = facing;
       (player->bindTo).posX = EvalExpressionF(player, &(scData->params[3]));
       (player->bindTo).posY = EvalExpressionF(player, &(scData->params[4]));
       (player->bindTo).posZ = EvalExpressionF(player, &(scData->params[5]));
@@ -651,7 +652,7 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
           min = max;
           max = temp;
         }
-        (player->var)[index] = rand() % ((max - min) + 1) + min;
+        (player->var)[index] = (uint32_t)(rand()) % ((max - min) + 1) + min;
       } else {
         VWarn(player, "randomized var out of range (%i)", index);
       }
@@ -998,14 +999,14 @@ uint32_t R_PlayerSCtrlApplyElem(MUGEN_PLAYER* player, MUGEN_SC_DATA* scData, MUG
       return 0;
 
     case ID_SC_Width:
-      // $0 = edge X
-      // $1 = edge Y
-      // $2 = player X
-      // $3 = player Y
-      player->widthEdgeX = EvalExpressionI(player, &(scData->params[0]), 1);
-      player->widthEdgeY = EvalExpressionI(player, &(scData->params[1]), 1);
-      player->widthPlayerX = EvalExpressionI(player, &(scData->params[2]), 1);
-      player->widthPlayerY = EvalExpressionI(player, &(scData->params[3]), 1);
+      // $0 = edgeFront
+      // $1 = edgeBack
+      // $2 = playerFront
+      // $3 = playerBack
+      player->widthEdgeFront = EvalExpressionI(player, &(scData->params[0]), 1);
+      player->widthEdgeBack = EvalExpressionI(player, &(scData->params[1]), 1);
+      player->widthPlayerFront = EvalExpressionI(player, &(scData->params[2]), 1);
+      player->widthPlayerBack = EvalExpressionI(player, &(scData->params[3]), 1);
       return 0;
 
     case ID_SC_ScreenBound:
@@ -1784,14 +1785,14 @@ void R_ExplodSetParams(MUGEN_PLAYER* player, MUGEN_EXPLODS_DATA* explod, MUGEN_S
     }
     ++randomX;
     // random = 0, 0でもrand()は実行される
-    explod->offsetX += (rand() % randomX) - (randomX >> 1);
+    explod->offsetX += ((uint32_t)(rand()) % randomX) - (randomX >> 1);
     int32_t randomY = EvalExpressionI(player, &(paramsEx->randomY), 1);
     if (randomY < 0) {
       randomY = 0;
       Warn(player, "negative explod random param");
     }
     ++randomY;
-    explod->offsetY += (rand() % randomY) - (randomY >> 1);
+    explod->offsetY += ((uint32_t)(rand()) % randomY) - (randomY >> 1);
     explod->axisX = (float)(explod->offsetX);
     explod->axisY = (float)(explod->offsetY);
     explod->velX = EvalExpressionF(player, &(paramsEx->velX)) * baseFacing;
@@ -1846,6 +1847,8 @@ void R_ExplodSetParams(MUGEN_PLAYER* player, MUGEN_EXPLODS_DATA* explod, MUGEN_S
     }
   } else if (superMoveTime == -2) {
     superMoveTime = explod->removeTime;
+    explod->superMoveTime = superMoveTime;
+  } else {
     explod->superMoveTime = superMoveTime;
   }
   int32_t pauseMoveTime = EvalExpressionI(player, &(paramsEx->pauseMoveTime), 1);
@@ -2173,10 +2176,10 @@ void R_PlayerReset(MUGEN_PLAYER* player) {
   player->pauseMoveTime = 0;
   player->superMoveTime = 0;
   player->screenBound = 1;
-  player->widthPlayerX = 0;
-  player->widthPlayerY = 0;
-  player->widthEdgeX = 0;
-  player->widthEdgeY = 0;
+  player->widthPlayerFront = 0;
+  player->widthPlayerBack = 0;
+  player->widthEdgeFront = 0;
+  player->widthEdgeBack = 0;
   SecureZeroMemory(&(player->assertSpecialFlags), 9);
   player->projContactType = PROJCONTACT_NONE;
   player->projContactTime = 0;
@@ -2365,9 +2368,9 @@ void R_SCtrlDoPlaySndInfo(MUGEN_PLAYER* player, MUGEN_SC_PARAMS_EX_PLAYSND* para
     pan = ScrPositionToPan(pan);
   }
   int32_t volume = EvalExpressionI(player, &(paramsEx->volume), 1);
-  volume = (int32_t)SndCorrectVolOff(volume) + (g->soundWin2).wavVolume;
+  volume = SndCorrectVolOff(volume) + (g->soundWin2).wavVolume;
   if (paramsEx->sndFlag == 0) {
-    volume += (int32_t)SndCorrectVolOff(player->info->volume);
+    volume += SndCorrectVolOff(player->info->volume);
   }
   volume = PanVolumeAdjust(volume);
   int32_t frequency = SndVoiceGetFreq(index);
@@ -2442,12 +2445,12 @@ uint32_t R_SCtrlInitHitDef(MUGEN_SC_PARAMS_EX_HITDEF* paramsEx, MUGEN_HIT_DEF_PA
     hitDefParams->jugglePoints = juggle;
   }
 
-  hitDefParams->damage = (EvalExpressionI(player, &(paramsEx->damage), 1) != 0);
-  hitDefParams->guard_damage = (EvalExpressionI(player, &(paramsEx->guard_damage), 1) != 0);
-  hitDefParams->getPower = (EvalExpressionI(player, &(paramsEx->getPower), 0) != 0);
-  hitDefParams->guard_getPower = (EvalExpressionI(player, &(paramsEx->guard_getPower), 0) != 0);
-  hitDefParams->givePower = (EvalExpressionI(player, &(paramsEx->givePower), 0) != 0);
-  hitDefParams->guard_givePower = (EvalExpressionI(player, &(paramsEx->guard_givePower), 0) != 0);
+  hitDefParams->damage = EvalExpressionI(player, &(paramsEx->damage), 1);
+  hitDefParams->guard_damage = EvalExpressionI(player, &(paramsEx->guard_damage), 1);
+  hitDefParams->getPower = EvalExpressionI(player, &(paramsEx->getPower), 0);
+  hitDefParams->guard_getPower = EvalExpressionI(player, &(paramsEx->guard_getPower), 0);
+  hitDefParams->givePower = EvalExpressionI(player, &(paramsEx->givePower), 0);
+  hitDefParams->guard_givePower = EvalExpressionI(player, &(paramsEx->guard_givePower), 0);
 
   {
     int32_t p2HitPauseTime = EvalExpressionI(player, &(paramsEx->p2HitPauseTime), 1);
@@ -2875,6 +2878,8 @@ int32_t R_SCtrlInitProjectile(MUGEN_SC_PARAMS_EX_PROJECTILE* paramsEx, MUGEN_PLA
     projAnim = 0;
     Warn(player, "illegal projanim");
   }
+
+  /* ここだけfloatをintにキャストしている */
   projData.superMoveTime = (int32_t)EvalExpressionF(player, &(paramsEx->superMoveTime));
   projData.pauseMoveTime = (int32_t)EvalExpressionF(player, &(paramsEx->pauseMoveTime));
   int32_t index = ProjArrayAdd(owner, owner->projectiles, &projData, projAnim);
@@ -2899,76 +2904,59 @@ int32_t R_SCtrlInitProjectile(MUGEN_SC_PARAMS_EX_PROJECTILE* paramsEx, MUGEN_PLA
 static inline void SCtrlClipboard_(MUGEN_PLAYER* player, MUGEN_SC_ID scId, char* text, ...) __attribute__((nonnull(1, 3)));
 
 static inline void SCtrlClipboard(MUGEN_PLAYER* player, MUGEN_SC_ID scId, int32_t argc, char* text, MUGEN_EVAL_VALUE* params) {
-  // 実際のClipboard処理ではポインタとint型とdouble型をないまぜにした配列に
-  // paramsの各評価値を詰めることで実現しているようだが, 環境依存のバグが出そうなので下記の形で代替した
-  uint32_t types[5];
-  int32_t iparams[5];
-  double dparams[5];
+  // int型とdouble型をないまぜにした配列にparamsの各評価値を詰め、
+  // int, float混じりの動的引数呼び出しを実現
+  size_t ptr = 0;
+  int32_t buf[10] = {0};
   if (argc >= 1) {
     int32_t intResult;
     float floatResult;
     if (EvalExpression(player, &(params[0]), &intResult, &floatResult) == 2) {
-      types[0] = 1;
-      dparams[0] = (double)(floatResult);
+      *(double*)(buf + ptr) = (double)floatResult;
+      ptr += 2;
     } else {
-      types[0] = 0;
-      iparams[0] = intResult;
+      buf[ptr] = intResult;
+      ptr += 1;
     }
     if (argc >= 2) {
       if (EvalExpression(player, &(params[1]), &intResult, &floatResult) == 2) {
-        types[1] = 1;
-        dparams[1] = (double)(floatResult);
+        *(double*)(buf + ptr) = (double)floatResult;
+        ptr += 2;
       } else {
-        types[1] = 0;
-        iparams[1] = intResult;
+        buf[ptr] = intResult;
+        ptr += 1;
       }
       if (argc >= 3) {
         if (EvalExpression(player, &(params[2]), &intResult, &floatResult) == 2) {
-          types[2] = 1;
-          dparams[2] = (double)(floatResult);
+          *(double*)(buf + ptr) = (double)floatResult;
+          ptr += 2;
         } else {
-          types[2] = 0;
-          iparams[2] = intResult;
+          buf[ptr] = intResult;
+          ptr += 1;
         }
         if (argc >= 4) {
           if (EvalExpression(player, &(params[3]), &intResult, &floatResult) == 2) {
-            types[3] = 1;
-            dparams[3] = (double)(floatResult);
+            *(double*)(buf + ptr) = (double)floatResult;
+            ptr += 2;
           } else {
-            types[3] = 0;
-            iparams[3] = intResult;
+            buf[ptr] = intResult;
+            ptr += 1;
           }
 
           if (argc >= 5) {
             if (EvalExpression(player, &(params[4]), &intResult, &floatResult) == 2) {
-              types[4] = 1;
-              dparams[4] = (double)(floatResult);
+              *(double*)(buf + ptr) = (double)floatResult;
+              ptr += 2;
             } else {
-              types[4] = 0;
-              iparams[4] = intResult;
+              buf[ptr] = intResult;
+              ptr += 1;
             }
           }
         }
       }
     }
 
-    switch (argc) {
-      case 1:
-        SCtrlClipboard_(player, scId, text, (types[0] == 0 ? iparams[0] : dparams[0]));
-        break;
-      case 2:
-        SCtrlClipboard_(player, scId, text, (types[0] == 0 ? iparams[0] : dparams[0]), (types[1] == 0 ? iparams[1] : dparams[1]));
-        break;
-      case 3:
-        SCtrlClipboard_(player, scId, text, (types[0] == 0 ? iparams[0] : dparams[0]), (types[1] == 0 ? iparams[1] : dparams[1]), (types[2] == 0 ? iparams[2] : dparams[2]));
-        break;
-      case 4:
-        SCtrlClipboard_(player, scId, text, (types[0] == 0 ? iparams[0] : dparams[0]), (types[1] == 0 ? iparams[1] : dparams[1]), (types[2] == 0 ? iparams[2] : dparams[2]), (types[3] == 0 ? iparams[3] : dparams[3]));
-        break;
-      default:
-        SCtrlClipboard_(player, scId, text, (types[0] == 0 ? iparams[0] : dparams[0]), (types[1] == 0 ? iparams[1] : dparams[1]), (types[2] == 0 ? iparams[2] : dparams[2]), (types[3] == 0 ? iparams[3] : dparams[3]), (types[4] == 0 ? iparams[4] : dparams[4]));
-        break;
-    }
+    SCtrlClipboard_(player, scId, text, buf[0], buf[1], buf[2], buf[3], buf[4], buf[5], buf[6], buf[7], buf[8], buf[9]);
   }
 }
 

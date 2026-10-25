@@ -3761,10 +3761,10 @@ struct MUGEN_PLAYER_ {
   uint32_t moveCameraX;
   uint32_t moveCameraY;
   uint32_t playerPush;
-  int32_t widthEdgeX;
-  int32_t widthEdgeY;
-  int32_t widthPlayerX;
-  int32_t widthPlayerY;
+  int32_t widthEdgeFront;
+  int32_t widthEdgeBack;
+  int32_t widthPlayerFront;
+  int32_t widthPlayerBack;
   MUGEN_PLAYER_ASSERTSPECIAL_FLAGS assertSpecialFlags;
   int32_t projContactId;
   MUGEN_PLAYER_PROJCONTACT_TYPE projContactType;
@@ -4205,7 +4205,7 @@ static void (*const ComboAdd)(int32_t teamside, int32_t value) = (void (*const)(
 static void (*const PlayerComboCountCheck)(MUGEN_PLAYER* player) = (void (*const)(MUGEN_PLAYER*))0x4222a0;
 static MUGEN_AFTERIMAGE_DATA* (*const RequestNewAftImg)(MUGEN_AFTERIMAGE_INFO* afterImage) = (MUGEN_AFTERIMAGE_DATA * (*const)(MUGEN_AFTERIMAGE_INFO*))0x423630;
 static void (*const ProjArrayAftImgUpdate)(MUGEN_PROJECTILE_INFO_EX* projInfo) = (void (*const)(MUGEN_PROJECTILE_INFO_EX*))0x423830;
-static int64_t (*const TeamLifeBack)(int32_t teamIndex) = (int64_t(*const)(int32_t))0x423be0;
+static int32_t (*const TeamLifeBack)(int32_t teamIndex) = (int32_t(*const)(int32_t))0x423be0;
 static void (*const WinIconCheck)(int32_t winTeamside, uint32_t lastHitAttr, int32_t winIconType) = (void (*const)(int32_t, uint32_t, int32_t))0x423ea0;
 static uint32_t (*const TeamHasFullLife)(int32_t teamside) = (uint32_t(*const)(int32_t))0x423f90;
 static MUGEN_PLAYER* (*const HelperMake)(MUGEN_PLAYER* player, MUGEN_SC_PARAMS_EX_HELPER* paramsEx, MUGEN_PLAYER_REDIRECTS* redirects) = (MUGEN_PLAYER * (*const)(MUGEN_PLAYER*, MUGEN_SC_PARAMS_EX_HELPER*, MUGEN_PLAYER_REDIRECTS*))0x4246a0;
@@ -4244,7 +4244,7 @@ static MUGEN_PLAYER* (*const EnemyAccessNear)(MUGEN_PLAYER* player, int32_t no) 
 static MUGEN_PLAYER* (*const PlayerAccessID)(int32_t playerId) = (MUGEN_PLAYER * (*const)(int32_t))0x439a00;
 static int32_t (*const PlayerGetDamagedLife)(MUGEN_PLAYER* player) = (int32_t(*const)(MUGEN_PLAYER*))0x439a60;
 static int32_t (*const PlayerDistX)(MUGEN_PLAYER* playerA, MUGEN_PLAYER* playerB) = (int32_t(*const)(MUGEN_PLAYER*, MUGEN_PLAYER*))0x439ad0;
-static int64_t (*const PlayerBodyDistX)(MUGEN_PLAYER* playerA, MUGEN_PLAYER* playerB) = (int64_t(*const)(MUGEN_PLAYER*, MUGEN_PLAYER*))0x439b00;
+static int32_t (*const PlayerBodyDistX)(MUGEN_PLAYER* playerA, MUGEN_PLAYER* playerB) = (int32_t(*const)(MUGEN_PLAYER*, MUGEN_PLAYER*))0x439b00;
 static uint32_t (*const PlayerInAnyGuardDist)(MUGEN_PLAYER* player) = (uint32_t(*const)(MUGEN_PLAYER*))0x439c00;
 static uint32_t (*const PlayerAnimExist)(MUGEN_PLAYER* player, int32_t animNo) = (uint32_t(*const)(MUGEN_PLAYER*, int32_t))0x439f10;
 static uint32_t (*const PlayerSelfAnimExist)(MUGEN_PLAYER* player, int32_t animNo) = (uint32_t(*const)(MUGEN_PLAYER*, int32_t))0x439fe0;
@@ -4299,7 +4299,7 @@ static int32_t (*const SndVoiceCleanup)(int32_t sndID, MUGEN_SND_INFO** snd, int
 static void (*const SndIDStop)(int32_t sndID) = (void (*const)(int32_t))0x44d250;
 static uint32_t (*const SndIDIsPlaying)(int32_t sndID) = (uint32_t(*const)(int32_t))0x44d350;
 static int32_t (*const SndIDGetChannel)(int32_t sndID) = (int32_t(*const)(int32_t sndID))0x44d3c0;
-static int64_t (*const SndCorrectVolOff)(int32_t volume) = (int64_t(*const)(int32_t))0x44db00;
+static int32_t (*const SndCorrectVolOff)(int32_t volume) = (int32_t(*const)(int32_t))0x44db00;
 static void (*const GameSndPlay)(MUGEN_SND_INFO** snd, int32_t groupNo, int32_t itemNo, int32_t volume) = (void (*const)(MUGEN_SND_INFO**, int32_t, int32_t, int32_t))0x44e2d0;
 static void (*const GameSndPlayIDPos)(int32_t sndID, int32_t posX, MUGEN_SND_INFO** snd, int32_t groupNo, int32_t sndNo) = (void (*const)(int32_t, int32_t, MUGEN_SND_INFO**, int32_t, int32_t))0x44e3b0;
 static int32_t (*const ScrPositionToPan)(int32_t pan) = (int32_t(*const)(int32_t pan))0x44e4e0;

@@ -527,7 +527,6 @@ static inline void EvalOperator(MUGEN_PLAYER* player, MUGEN_EVAL_VALUE* eval, in
         PushMyStackT(EVAL_TYPE_FLOAT);
       }
       break;
-      break;
     case EVAL_OP_SUB:
       if (type == 1) {
         PushMyStackI(b.i - a.i);
@@ -536,7 +535,6 @@ static inline void EvalOperator(MUGEN_PLAYER* player, MUGEN_EVAL_VALUE* eval, in
         PushMyStackF(b.f - a.f);
         PushMyStackT(EVAL_TYPE_FLOAT);
       }
-      break;
       break;
     case EVAL_OP_MUL:
       if (type == 1) {
